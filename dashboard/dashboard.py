@@ -20,7 +20,7 @@ st.markdown(
 
 # Membaca dataset
 BASE_DIR = Path(__file__).parent
-DATA_DIR = BASE_DIR / "data"
+DATA_DIR = BASE_DIR.parent / "data"
 
 orders_df = pd.read_csv(DATA_DIR / "orders_dataset.csv")
 payments_df = pd.read_csv(DATA_DIR / "order_payments_dataset.csv")
