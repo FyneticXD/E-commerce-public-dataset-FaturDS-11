@@ -1,175 +1,132 @@
 
 import streamlit as st
 import pandas as pd
-import plotly.express as px
-import os
+import matplotlib.pyplot as plt
+from pathlib import Path
 
-# Konfigurasi halaman
+# Konfigurasi dashboard
 st.set_page_config(
-    page_title="Olist E-Commerce Dashboard",
-    page_icon="📊",
+    page_title="E-Commerce Data Analysis",
+    page_icon="🛒",
     layout="wide"
 )
 
-# Membaca data
-BASE_DIR = os.path.dirname(__file__)
-DATA_DIR = os.path.join(BASE_DIR, "data")
-
-df = pd.read_csv(os.path.join(DATA_DIR, "main_data.csv"))
-category_sales = pd.read_csv(
-    os.path.join(DATA_DIR, "category_sales.csv")
-)
-segment_counts = pd.read_csv(
-    os.path.join(DATA_DIR, "segment_counts.csv")
+# Judul dashboard
+st.title("🛒 E-Commerce Data Analysis Dashboard")
+st.markdown(
+    "Dashboard ini menampilkan hasil analisis data transaksi "
+    "E-Commerce Public Dataset."
 )
 
-# Mengubah tipe data tanggal
-df["order_purchase_timestamp"] = pd.to_datetime(
-    df["order_purchase_timestamp"],
+# Membaca dataset
+BASE_DIR = Path(__file__).parent
+DATA_DIR = BASE_DIR / "data"
+
+orders_df = pd.read_csv(DATA_DIR / "orders_dataset.csv")
+payments_df = pd.read_csv(DATA_DIR / "order_payments_dataset.csv")
+customers_df = pd.read_csv(DATA_DIR / "customers_dataset.csv")
+
+# Mengubah format tanggal
+orders_df["order_purchase_timestamp"] = pd.to_datetime(
+    orders_df["order_purchase_timestamp"],
     errors="coerce"
 )
 
-# Judul dashboard
-st.title("📊 Olist E-Commerce Dashboard")
-st.caption(
-    "Dashboard analisis penjualan dan perilaku pelanggan "
-    "Olist periode 2017–2018"
+# Sidebar
+st.sidebar.header("Filter Dashboard")
+
+status_list = sorted(orders_df["order_status"].dropna().unique())
+
+selected_status = st.sidebar.multiselect(
+    "Pilih Status Pesanan",
+    options=status_list,
+    default=status_list
 )
 
-# Sidebar filter tanggal
-st.sidebar.header("Filter Data")
+filtered_orders = orders_df[
+    orders_df["order_status"].isin(selected_status)
+]
 
-min_date = df["order_purchase_timestamp"].min().date()
-max_date = df["order_purchase_timestamp"].max().date()
+# Metrics
+total_orders = filtered_orders["order_id"].nunique()
+total_customers = customers_df["customer_id"].nunique()
+total_payments = payments_df["order_id"].nunique()
 
-date_range = st.sidebar.date_input(
-    "Pilih rentang tanggal",
-    value=(min_date, max_date),
-    min_value=min_date,
-    max_value=max_date
-)
-
-if len(date_range) == 2:
-    start_date, end_date = date_range
-
-    filtered_df = df[
-        (df["order_purchase_timestamp"].dt.date >= start_date) &
-        (df["order_purchase_timestamp"].dt.date <= end_date)
-    ].copy()
-else:
-    filtered_df = df.copy()
-
-# Menghitung KPI
-total_revenue = filtered_df["price"].sum()
-total_orders = filtered_df["order_id"].nunique()
-total_customers = filtered_df["customer_unique_id"].nunique()
-
-# KPI Cards
 col1, col2, col3 = st.columns(3)
 
-col1.metric(
-    "Total Revenue",
-    f"R$ {total_revenue:,.2f}"
-)
-
-col2.metric(
-    "Total Orders",
-    f"{total_orders:,}"
-)
-
-col3.metric(
-    "Total Customers",
-    f"{total_customers:,}"
-)
+col1.metric("Total Pesanan", f"{total_orders:,}")
+col2.metric("Total Pelanggan", f"{total_customers:,}")
+col3.metric("Pesanan dengan Pembayaran", f"{total_payments:,}")
 
 st.divider()
 
-# Grafik tren penjualan bulanan
-st.subheader("Tren Penjualan Bulanan")
+# Grafik tren pesanan bulanan
+st.subheader("📈 Tren Jumlah Pesanan E-Commerce Setiap Bulan")
 
-monthly_data = filtered_df.groupby(
-    filtered_df["order_purchase_timestamp"].dt.to_period("M")
-).agg(
-    total_orders=("order_id", "nunique"),
-    total_revenue=("price", "sum")
-).reset_index()
-
-monthly_data["month"] = (
-    monthly_data["order_purchase_timestamp"].astype(str)
+monthly_orders = (
+    filtered_orders
+    .dropna(subset=["order_purchase_timestamp"])
+    .groupby(
+        filtered_orders["order_purchase_timestamp"]
+        .dt.to_period("M")
+    )["order_id"]
+    .nunique()
 )
 
-fig_monthly = px.line(
-    monthly_data,
-    x="month",
-    y="total_revenue",
-    markers=True,
-    title="Total Revenue per Bulan",
-    labels={
-        "month": "Bulan",
-        "total_revenue": "Revenue (BRL)"
-    }
+monthly_orders.index = monthly_orders.index.astype(str)
+
+fig, ax = plt.subplots(figsize=(12, 5))
+
+monthly_orders.plot(
+    kind="line",
+    marker="o",
+    ax=ax
 )
 
-st.plotly_chart(fig_monthly, use_container_width=True)
+ax.set_title("Tren Jumlah Pesanan per Bulan")
+ax.set_xlabel("Bulan")
+ax.set_ylabel("Jumlah Pesanan")
+ax.grid(True, alpha=0.3)
 
-# Grafik kategori produk
-st.subheader("Performa Kategori Produk")
+plt.xticks(rotation=45)
+plt.tight_layout()
 
-top_category = category_sales.sort_values(
-    "total_revenue",
-    ascending=False
-).head(10)
+st.pyplot(fig)
+plt.close(fig)
 
-fig_category = px.bar(
-    top_category,
-    x="total_revenue",
-    y="product_category_name",
-    orientation="h",
-    title="Top 10 Kategori Berdasarkan Revenue",
-    labels={
-        "total_revenue": "Revenue (BRL)",
-        "product_category_name": "Kategori Produk"
-    }
+st.divider()
+
+# Grafik metode pembayaran
+st.subheader("💳 Metode Pembayaran yang Paling Banyak Digunakan")
+
+payment_counts = payments_df["payment_type"].value_counts()
+
+fig, ax = plt.subplots(figsize=(10, 5))
+
+payment_counts.plot(
+    kind="bar",
+    ax=ax
 )
 
-fig_category.update_layout(
-    yaxis={"categoryorder": "total ascending"}
-)
+ax.set_title("Distribusi Metode Pembayaran")
+ax.set_xlabel("Metode Pembayaran")
+ax.set_ylabel("Jumlah Transaksi")
+ax.grid(axis="y", alpha=0.3)
 
-st.plotly_chart(fig_category, use_container_width=True)
+plt.xticks(rotation=45)
+plt.tight_layout()
 
-# Grafik segmentasi pelanggan
-st.subheader("Segmentasi Pelanggan RFM")
-
-fig_segment = px.bar(
-    segment_counts,
-    x="Customer_Segment",
-    y="Total_Customers",
-    title="Distribusi Segmentasi Pelanggan",
-    labels={
-        "Customer_Segment": "Segmen Pelanggan",
-        "Total_Customers": "Jumlah Pelanggan"
-    }
-)
-
-st.plotly_chart(fig_segment, use_container_width=True)
+st.pyplot(fig)
+plt.close(fig)
 
 # Tabel data
-st.subheader("Detail Data Penjualan")
+st.divider()
+
+st.subheader("📋 Data Pesanan")
 
 st.dataframe(
-    filtered_df[
-        [
-            "order_id",
-            "customer_unique_id",
-            "order_purchase_timestamp",
-            "product_category_name",
-            "price"
-        ]
-    ].head(100),
+    filtered_orders.head(10),
     use_container_width=True
 )
 
-st.caption(
-    "Data bersumber dari Olist Brazilian E-Commerce Public Dataset."
-)
+st.caption("Dashboard dibuat untuk Project Analisis Data Dicoding.")
