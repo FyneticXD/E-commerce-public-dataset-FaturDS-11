@@ -1,188 +1,134 @@
-\# E-Commerce Data Analysis Dashboard 📊
+# E-Commerce Data Analysis Dashboard 📊
 
+## Deskripsi Project
 
+Project ini merupakan tugas akhir dari course **Belajar Fundamental Analisis Data** di Dicoding.
 
-\## Deskripsi Project
+Project ini bertujuan untuk menganalisis data transaksi E-Commerce menggunakan E-Commerce Public Dataset dari Olist. Analisis dilakukan untuk memahami tren jumlah pesanan, nilai pembayaran, dan metode pembayaran pelanggan.
 
+Hasil analisis disajikan dalam bentuk dashboard interaktif menggunakan Streamlit.
 
+## Business Questions
 
-Project ini merupakan tugas akhir dari course \*\*Belajar Fundamental Analisis Data\*\* di Dicoding.
+Analisis ini berfokus pada beberapa pertanyaan bisnis berikut:
 
+1. **Bagaimana tren jumlah pesanan E-Commerce setiap bulan selama periode 4 September 2016 hingga 17 Oktober 2018?**
+2. **Metode pembayaran apa yang paling banyak digunakan pelanggan dan bagaimana proporsi penggunaannya dibandingkan metode pembayaran lainnya?**
+3. **Bagaimana tren total nilai pembayaran setiap bulan selama periode data yang tersedia?**
 
+## Features
 
-Project ini bertujuan untuk melakukan analisis data transaksi E-Commerce menggunakan dataset E-Commerce Public Dataset. Hasil analisis disajikan dalam bentuk dashboard interaktif menggunakan Streamlit agar informasi dapat dipahami dengan lebih mudah.
+Dashboard memiliki beberapa fitur utama:
 
+- **Filter Status Pesanan** – Memfilter data berdasarkan status pesanan.
+- **Total Pesanan** – Menampilkan jumlah pesanan berdasarkan filter yang dipilih.
+- **Total Pelanggan** – Menampilkan jumlah pelanggan pada data pesanan yang difilter.
+- **Total Nilai Pembayaran** – Menampilkan total nilai pembayaran dari pesanan yang difilter.
+- **Tren Jumlah Pesanan Bulanan** – Menampilkan perubahan jumlah pesanan setiap bulan.
+- **Tren Nilai Pembayaran Bulanan** – Menampilkan perubahan total nilai pembayaran setiap bulan.
+- **Distribusi Metode Pembayaran** – Menampilkan jumlah transaksi berdasarkan metode pembayaran.
+- **Proporsi Metode Pembayaran** – Menampilkan persentase penggunaan setiap metode pembayaran.
+- **Data Pesanan** – Menampilkan tabel data pesanan.
 
+## Tech Stack
 
-\## Features
+- Python
+- Pandas
+- Matplotlib
+- Streamlit
 
-
-
-Dashboard ini memiliki beberapa fitur utama:
-
-
-
-\- \*\*Filter Dashboard\*\* – Memfilter data berdasarkan status pesanan.
-
-\- \*\*Total Pesanan\*\* – Menampilkan jumlah total pesanan.
-
-\- \*\*Total Pelanggan\*\* – Menampilkan jumlah pelanggan.
-
-\- \*\*Pesanan dengan Pembayaran\*\* – Menampilkan jumlah pesanan yang memiliki data pembayaran.
-
-\- \*\*Tren Jumlah Pesanan per Bulan\*\* – Visualisasi tren pesanan berdasarkan waktu.
-
-\- \*\*Analisis Metode Pembayaran\*\* – Menampilkan distribusi transaksi berdasarkan metode pembayaran.
-
-\- \*\*Data Pesanan\*\* – Menampilkan tabel data pesanan secara detail.
-
-
-
-\## Tech Stack
-
-
-
-\- Python
-
-\- Pandas
-
-\- Matplotlib
-
-\- Streamlit
-
-
-
-\## Project Structure
-
-
+## Project Structure
 
 ```text
-
-submission/
-
+E-commerce-public-dataset-FaturDS-11/
 ├── dashboard/
-
-│   ├── dashboard.py
-
-│   └── data/
-
-│       ├── customers\_dataset.csv
-
-│       ├── order\_payments\_dataset.csv
-
-│       └── orders\_dataset.csv
-
-└── README.md
-
+│   └── dashboard.py
+├── data/
+│   ├── customers_dataset.csv
+│   ├── order_payments_dataset.csv
+│   └── orders_dataset.csv
+├── notebook.ipynb
+├── README.md
+├── requirements.txt
+└── url.txt
 ```
 
+## Installation
 
-
-\## Installation
-
-
-
-\### 1. Clone Repository
-
-
+### 1. Clone Repository
 
 ```bash
-
-git clone https://github.com/username/e-commerce-data-analysis.git
-
+git clone https://github.com/FyneticXD/E-commerce-public-dataset-FaturDS-11.git
 ```
 
-
-
-\### 2. Navigate to Project Directory
-
-
+### 2. Navigate to Project Directory
 
 ```bash
-
-cd e-commerce-data-analysis
-
+cd E-commerce-public-dataset-FaturDS-11
 ```
 
+### 3. Create Virtual Environment
 
-
-\### 3. Install Dependencies
-
-
+**Windows:**
 
 ```bash
-
-pip install streamlit pandas matplotlib
-
+python -m venv venv
+venv\Scripts\activate
 ```
 
-
-
-\### 4. Run the Dashboard
-
-
+**Linux/macOS:**
 
 ```bash
+python3 -m venv venv
+source venv/bin/activate
+```
 
+### 4. Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 5. Run the Dashboard
+
+```bash
 cd dashboard
-
 streamlit run dashboard.py
-
 ```
 
-
-
-Dashboard akan terbuka secara otomatis di browser melalui alamat:
-
-
+Dashboard akan terbuka melalui browser pada alamat:
 
 ```text
-
 http://localhost:8501
-
 ```
 
+## Dataset
 
+Dataset yang digunakan adalah **E-Commerce Public Dataset** dari Olist.
 
-\## Dataset
+Dataset yang digunakan pada dashboard meliputi:
 
+- `orders_dataset.csv`
+- `order_payments_dataset.csv`
+- `customers_dataset.csv`
 
+Dataset ini digunakan untuk menganalisis aktivitas pesanan, nilai pembayaran, dan metode pembayaran pelanggan.
 
-Dataset yang digunakan adalah \*\*E-Commerce Public Dataset\*\* yang berisi informasi mengenai transaksi E-Commerce, pelanggan, pesanan, dan metode pembayaran.
+## Dashboard Preview
 
+Dashboard dapat diakses melalui link berikut:
 
+[ E-Commerce Data Analysis Dashboard ](https://olist-ecommerce-dashboard-fyneticxd.streamlit.app/)
 
-Dataset digunakan untuk menganalisis pola transaksi serta memberikan gambaran mengenai aktivitas penjualan.
+Dashboard menampilkan tren jumlah pesanan bulanan, tren nilai pembayaran, distribusi metode pembayaran, proporsi metode pembayaran, serta tabel data pesanan.
 
+## Author
 
-
-\## Dashboard Preview
-
-
-
-Dashboard menampilkan visualisasi data transaksi E-Commerce, termasuk tren pesanan bulanan, analisis metode pembayaran, dan data pesanan.
-
-
-
-\## Author
-
-
-
-\*\*Fatur Rachman Putra Nanta Efendi\*\*
-
-
+**Fatur Rachman Putra Nanta Efendi**
 
 Information Systems Student  
-
 Universitas Pembangunan Nasional "Veteran" Jawa Timur
 
+---
 
-
-\---
-
-
-
-\*Project ini dibuat sebagai bagian dari tugas akhir Dicoding – Belajar Fundamental Analisis Data.\*
-
-
-
+Project ini dibuat sebagai bagian dari tugas akhir Dicoding – Belajar Fundamental Analisis Data.
